@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PrayerWall - Christian Prayer & Resources</title>
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #f0f4f8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Subtle cross pattern background using CSS */
+  body::before {
+    content: "✝";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    font-size: 15rem;
+    color: rgba(255 255 255 / 0.05);
+    transform: translate(-50%, -50%) rotate(-15deg);
+    user-select: none;
+    pointer-events: none;
+    z-index: 0;
+    font-weight: 900;
+  }
+
+  header {
+    width: 100%;
+    background: rgba(0,0,0,0.3);
+    padding: 2rem 1rem 3rem;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 2;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
+    user-select: none;
+  }
+  header h1 .cross-icon {
+    font-size: 3.8rem;
+    color: #ffe082;
+    text-shadow: 0 0 8px #ffd54f;
+  }
+  header p {
+    margin-top: 0.4rem;
+    font-size: 1.25rem;
+    opacity: 0.85;
+  }
+
+  nav {
+    width: 100%;
+    max-width: 900px;
+    margin: 1.5rem auto 3rem auto;
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    background: rgba(0,0,0,0.25);
+    padding: 1rem 2rem;
+    border-radius: 30px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    position: relative;
+    z-index: 2;
+  }
+  nav a {
+    color: #fff9c4;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    user-select: none;
+  }
+  nav a:hover, nav a:focus {
+    background-color: #ffe082;
+    color: #4a2c00;
+    outline: none;
+    box-shadow: 0 0 8px #ffd54faa;
+  }
+
+  main {
+    width: 90%;
+    max-width: 900px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Sections styling */
+  section {
+    background: rgba(255 255 255 / 0.1);
+    border-radius: 25px;
+    padding: 2.5rem 3rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    margin-bottom: 3rem;
+    color: #fff;
+    backdrop-filter: blur(8px);
+  }
+
+  /* Hide by default */
+  .hidden {
+    display: none !important;
+  }
+
+  /* Prayer form */
+  textarea {
+    width: 100%;
+    min-height: 140px;
+    border-radius: 18px;
+    border: none;
+    padding: 1.3rem 1.5rem;
+    font-size: 1.2rem;
+    resize: vertical;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: inset 0 0 12px rgba(255 255 255 0.2);
+    color: #333;
+  }
+  textarea:focus {
+    outline: none;
+    box-shadow: 0 0 15px #ffe082cc;
+  }
+
+  button {
+    background: #ffd54f;
+    color: #4a2c00;
+    font-weight: 700;
+    font-size: 1.3rem;
+    border: none;
+    border-radius: 25px;
+    padding: 1rem 3rem;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    box-shadow: 0 5px 15px #ffca28aa;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+  }
+  button:hover, button:focus {
+    background-color: #ffca28;
+    box-shadow: 0 10px 25px #ffca2899;
+    outline: none;
+  }
+
+  /* Prayer wall */
+  .prayer {
+    background: rgba(255 255 255 / 0.25);
+    color: #3e2723;
+    padding: 1.3rem 2rem;
+    border-radius: 22px;
+    margin-bottom: 1.5rem;
+    border-left: 7px solid #ffd54f;
+    font-size: 1.15rem;
+    font-weight: 600;
+    box-shadow: 0 3px 8px rgba(255 213 79, 0.5);
+    user-select: text;
+  }
+
+  /* Resource page */
+  #searchInput {
+    width: 100%;
+    padding: 1rem 1.3rem;
+    border-radius: 25px;
+    border: none;
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: inset 0 0 15px rgba(255 255 255 0.3);
+    color: #3e2723;
+  }
+  #searchInput:focus {
+    outline: none;
+    box-shadow: 0 0 18px #ffe082dd;
+  }
+
+  .category {
+    margin-bottom: 3.5rem;
+  }
+  .category-header {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    user-select: none;
+  }
+  .category-header .cross-icon {
+    font-size: 2.6rem;
+    color: #ffd54f;
+    text-shadow: 0 0 6px #ffca2899;
+  }
+
+  .resource-item {
+    background: rgba(255 255 255 / 0.3);
+    border-radius: 20px;
+    padding: 1.3rem 1.7rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    color: #3e2723;
+    box-shadow: 0 4px 12px rgba(255 213 79, 0.3);
+    transition: background-color 0.3s ease;
+    user-select: none;
+  }
+  .resource-item:hover {
+    background-color: rgba(255 213 79, 0.15);
+  }
+  .resource-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin: 0;
+  }
+  .resource-details {
+    margin-top: 0.6rem;
+    font-size: 1rem;
+    line-height: 1.4;
+    display: none;
+  }
+  .resource-link {
+    display: inline-block;
+    margin-top: 0.35rem;
+    font-weight: 700;
+    color: #4a2c00;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .resource-link:hover {
+    color: #6d3b00;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    header h1 {
+      font-size: 2.4rem;
+    }
+    nav {
+      gap: 1.3rem;
+      padding: 1rem 1.5rem;
+    }
+    nav a {
+      font-size: 1rem;
+      padding: 0.5rem 0.9rem;
+    }
+    main {
+      width: 95%;
+    }
+    section {
+      padding: 1.8rem 2rem;
+    }
+    button {
+      width: 100%;
+      padding: 1rem 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="cross-icon">✝</span> PrayerWall</h1>
+  <p>Post your prayer requests anonymously and receive community support</p>
+</header>
+
+<nav>
+  <a href="#" onclick="showPage('wall')" tabindex="1">View Prayer Wall</a>
+  <a href="#" onclick="showPage('form')" tabindex="2">Submit a Prayer</a>
+  <a href="#" onclick="showPage('resources')" tabindex="3">Christian Resources</a>
+</nav>
+
+<main>
+  <section id="wallPage" class="" aria-label="Prayer Wall">
+    <div id="prayerWall" aria-live="polite" aria-atomic="true"></div>
+  </section>
+
+  <section id="formPage" class="hidden" aria-label="Submit Prayer">
+    <form id="prayerRequestForm" aria-describedby="formDesc">
+      <textarea placeholder="Write your prayer request here..." required aria-required="true" aria-label="Prayer request"></textarea>
+      <button type="submit">Submit Prayer</button>
+    </form>
+  </section>
+
+  <section id="resourcesPage" class="hidden" aria-label="Christian Resources">
+    <input type="text" id="searchInput" placeholder="Search resources..." aria-label="Search resources" autocomplete="off" />
+    <div id="resourceList"></div>
+  </section>
+</main>
+
+<script>
+  const prayerForm = document.getElementById('prayerRequestForm');
+  const prayerWall = document.getElementById('prayerWall');
+  const resourceList = document.getElementById('resourceList');
+  const searchInput = document.getElementById('searchInput');
+
+  // Store prayers in-memory
+  const prayers = [];
+
+  prayerForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const textArea = prayerForm.querySelector('textarea');
+    const text = textArea.value.trim();
+    if (!text) return;
+
+    prayers.unshift(text); // newest first
+    renderPrayers();
+    textArea.value = '';
+    showPage('wall');
+  });
+
+  function renderPrayers() {
+    prayerWall.innerHTML = '';
+    if (prayers.length === 0) {
+      prayerWall.innerHTML = '<p style="opacity:0.75; font-style:italic;">No prayer requests yet. Be the first to submit one.</p>';
+      return;
+    }
+    prayers.forEach(prayer => {
+      const div = document.createElement('div');
+      div.className = 'prayer';
+      div.textContent = prayer;
+      prayerWall.appendChild(div);
+    });
+  }
+
+  const resourcesByCategory = {
+    "🙏 Prayer & Devotion": [
+      { title: "How to Pray", details: "Learn simple, powerful ways to pray and grow your prayer life." },
+      { title: "Powerful Morning Prayers", details: "Start your day with prayers to set your heart and mind on God." },
+      { title: "Nighttime Prayers for Peace", details: "Calm your soul with prayer before you sleep." },
+      { title: "Prayer for Healing", details: "Prayers asking for physical, emotional, and spiritual healing." },
+      { title: "Prayer for Guidance", details: "Seek God’s wisdom and direction through prayer." },
+      { title: "Prayer for Strength", details: "Find encouragement in difficult times through prayer." },
+      { title: "Prayers for Family Members", details: "Intercede for the health and wellbeing of your loved ones." },
+      { title: "Prayers for Friends Who Don’t Know Jesus", details: "Pray for the salvation and transformation of friends." },
+      { title: "How to Keep a Prayer Journal", details: "Tips and tools to document your prayer journey." },
+      { title: "What to Pray When You’re Scared", details: "Finding peace in anxiety by turning to God in prayer." }
+    ],
+    "🌱 Spiritual Growth": [
+      { title: "How to Give Your Life to Jesus", details: "A step-by-step guide for new believers.", link: "https://www.biblegateway.com/resources/special-features/how-to-become-a-christian/" },
+      { title: "Bible Study for Beginners", details: "Learn how to start reading and understanding the Bible.", link: "https://www.biblestudytools.com/bible-study/beginners-guide/" },
+      { title: "Who is the Holy Spirit?", details: "Understanding the role of the Holy Spirit in your life." },
+      { title: "The Fruits of the Spirit Explained", details: "Love, joy, peace, and more: what they mean and how to grow them." },
+      { title: "Armor of God and How to Use It", details: "Spiritual tools to protect yourself from temptation." },
+      { title: "How to Stay Strong as a New Christian", details: "Encouragement and practical tips for new believers." },
+      { title: "What Is Repentance Really?", details: "Understanding the heart of repentance and forgiveness." },
+      { title: "How to Trust God in Hard Times", details: "Finding faith and hope during struggles." },
+      { title: "What is God’s Will for My Life?", details: "Learning to hear and follow God’s plan." },
+      { title: "How to Hear God’s Voice", details: "Ways God communicates and how to listen." },
+      { title: "How to Deal With Spiritual Dryness", details: "Overcoming feelings of emptiness in faith." },
+      { title: "How to Start a Devotion Routine", details: "Daily habits to keep you close to God." },
+      { title: "Spiritual Disciplines to Practice", details: "Prayer, fasting, worship, and other habits for growth." },
+      { title: "How to Fast Biblically", details: "Guidance on fasting with a spiritual purpose." },
+      { title: "How to Memorize Scripture", details: "Tips and tricks to hide God's Word in your heart." },
+      { title: "What Is Worship and How to Truly Do It", details: "Deepen your worship experience with understanding." },
+      { title: "How to Live Out the Beatitudes", details: "Applying Jesus’ teachings to everyday life." }
+    ],
+    "⚔️ Sin & Struggles": [
+      { title: "How to Stop Lust", details: "Biblical steps to fight temptation." },
+      { title: "How to Stop Lying", details: "Seeking honesty and integrity through faith." },
+      { title: "Christian Counseling Support", details: "Resources to find help in emotional and spiritual struggles." },
+      { title: "Verses for Depression", details: "Comforting scriptures for dark times." },
+      { title: "Verses for Anxiety", details: "Peace-giving Bible verses." },
+      { title: "How to Forgive", details: "Letting go of bitterness and embracing grace." },
+      { title: "Overcoming Addiction", details: "Faith-based support for freedom from addictions." },
+      { title: "Struggling with Doubt", details: "Finding answers and faith amid uncertainty." },
+      { title: "What to Do When You Backslide", details: "Steps to return to God after falling away." },
+      { title: "Battling Porn Addiction With God's Word", details: "Spiritual and practical help for healing.", link: "https://www.focusonthefamily.com/faith/biblical-steps-to-break-free-from-pornography/" },
+      { title: "How to Deal With Shame After Sin", details: "God’s forgiveness and restoration." },
+      { title: "Why God Still Loves You After You Sin", details: "Understanding grace and mercy." },
+      { title: "How to Overcome Jealousy", details: "Overcoming envy through scripture." }
+    ],
+    "🎵📱 Media & Tech": [
+      { title: "Top Christian Music Artists", details: "Discover worship and faith-based music.", link: "https://www.billboard.com/christian-songs/" },
+      { title: "Christian YouTube Channels", details: "Inspirational sermons, teachings, and worship videos.", link: "https://www.youtube.com/playlist?list=PLQ1BKSmypr6zp6vhk3BXKkWQHJr0hkN7k" },
+      { title: "Best Bible Apps", details: "Apps to read, study, and meditate on the Bible.", link: "https://www.biblegateway.com/resources/apps/" },
+      { title: "Christian Clothing Brands", details: "Shop faith-inspired apparel online." },
+      { title: "Worship Playlist", details: "Curated playlists to encourage your worship time." },
+      { title: "Christian Podcasts", details: "Listen to sermons, teachings, and faith stories.", link: "https://podcasts.apple.com/us/genre/podcasts-religion-spirituality-christianity/id1310" },
+      { title: "Online Bible Studies", details: "Join interactive Bible study groups online.", link: "https://www.biblestudytools.com/bible-study/online-bible-study.html" },
+      { title: "Best Christian Instagram Pages to Follow", details: "Inspirational accounts to uplift your feed." },
+      { title: "Christian TikTok Creators Sharing Truth", details: "Short faith messages on TikTok." },
+      { title: "Bible Reading Plan Generators", details: "Tools to help you stay consistent with Bible reading." },
+      { title: "Free Online Courses for Theology/Bible", details: "Learn deeper theology for free.", link: "https://www.coursera.org/courses?query=theology" },
+      { title: "Find a Local Church Near You (Search Tool)", details: "Locate churches in your area to join worship and community.", link: "https://www.churchfinder.com/" }
+    ]
+  };
+
+  // Show the page requested & hide others
+  function showPage(page) {
+    ['wallPage', 'formPage', 'resourcesPage'].forEach(id => {
+      document.getElementById(id).classList.add('hidden');
+    });
+    document.getElementById(page + 'Page').classList.remove('hidden');
+  }
+
+  // Render resources by category with toggle details
+  function renderResources() {
+    resourceList.innerHTML = '';
+    const query = searchInput.value.toLowerCase();
+
+    for (const [category, items] of Object.entries(resourcesByCategory)) {
+      // Filter items by search
+      const filteredItems = items.filter(item =>
+        item.title.toLowerCase().includes(query)
+      );
+      if (filteredItems.length === 0) continue;
+
+      // Category container
+      const categoryDiv = document.createElement('div');
+      categoryDiv.className = 'category';
+
+      // Category header with cross icon
+      const header = document.createElement('h3');
+      header.className = 'category-header';
+      header.innerHTML = `<span class="cross-icon">✝</span> ${category}`;
+      categoryDiv.appendChild(header);
+
+      // Add each resource item
+      filteredItems.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'resource-item';
+
+        const title = document.createElement('h4');
+        title.className = 'resource-title';
+        title.textContent = item.title;
+
+        const details = document.createElement('p');
+        details.className = 'resource-details';
+        details.textContent = item.details || '';
+
+        itemDiv.appendChild(title);
+        itemDiv.appendChild(details);
+
+        if (item.link) {
+          const link = document.createElement('a');
+          link.href = item.link;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.className = 'resource-link';
+          link.textContent = 'Learn more';
+          itemDiv.appendChild(link);
+        }
+
+        // Toggle details on click
+        itemDiv.addEventListener('click', () => {
+          const currentlyVisible = details.style.display === 'block';
+          // Hide all details first
+          document.querySelectorAll('.resource-details').forEach(p => p.style.display = 'none');
+          if (!currentlyVisible) {
+            details.style.display = 'block';
+          }
+        });
+
+        categoryDiv.appendChild(itemDiv);
+      });
+
+      resourceList.appendChild(categoryDiv);
+    }
+
+    // If nothing found
+    if (!resourceList.hasChildNodes()) {
+      resourceList.innerHTML = '<p style="opacity:0.8;">No resources matched your search.</p>';
+    }
+  }
+
+  // Event listeners
+  searchInput.addEventListener('input', renderResources);
+
+  // Init
+  window.onload = () => {
+    renderPrayers();
+    showPage('wall');
+    renderResources();
+  };
+</script>
+
+</body>
+</html>
